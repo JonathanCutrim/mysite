@@ -137,7 +137,12 @@ const EnhancedBattleshipGame = ({ theme = 'black', onBack }) => {
                 ← Back to Menu
               </button>
             </div>
-            <Battleship theme={theme} isExpanded={true} />
+            <Battleship 
+              theme={theme} 
+              isExpanded={true}
+              skipModeSelection={true} // Skip the internal mode selection
+            />
+
           </div>
         )}
       </div>

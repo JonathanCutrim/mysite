@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, ChevronLeft, Gamepad2, Globe, Monitor, Shield, Waves, Crosshair, AlertTriangle } from 'lucide-react';
 
-const ImprovedGameModeSelector = ({ theme = 'black', onSelectMode, onBack }) => {
+const SimplifiedGameModeSelector = ({ theme = 'black', onSelectMode, onBack }) => {
   const [hoverMode, setHoverMode] = useState(null);
   const [wavePosition, setWavePosition] = useState(0);
   const [radarSpin, setRadarSpin] = useState(0);
@@ -416,18 +416,6 @@ const ImprovedGameModeSelector = ({ theme = 'black', onSelectMode, onBack }) => 
                 </div>
                 <ArrowRight size={20} className={styles.highlight} />
               </div>
-              
-              {/* "Coming Soon" badge */}
-              {/* <div className={`absolute -top-2 -right-2 px-2 py-1 text-xs rounded-md font-bold
-                ${theme === 'cyberpunk' ? 'bg-pink-600 text-cyan-300' : 
-                theme === 'black' ? 'bg-blue-600 text-white' : 
-                'bg-blue-600 text-white'}`}
-                style={{
-                  boxShadow: theme === 'cyberpunk' ? '0 0 10px rgba(236, 72, 153, 0.5)' : 'none'
-                }}
-              >
-                COMING SOON
-              </div> */}
             </div>
           </div>
         </div>
@@ -561,7 +549,7 @@ const ImprovedGameModeSelector = ({ theme = 'black', onSelectMode, onBack }) => 
           transform: scale(0.75);
         }
         
-        .hover\:scale-102:hover {
+        .hover\\:scale-102:hover {
           transform: scale(1.02);
         }
       `}</style>
@@ -569,4 +557,4 @@ const ImprovedGameModeSelector = ({ theme = 'black', onSelectMode, onBack }) => 
   );
 };
 
-export default ImprovedGameModeSelector;
+export default SimplifiedGameModeSelector;

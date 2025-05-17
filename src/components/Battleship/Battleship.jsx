@@ -1,13 +1,13 @@
 // src/components/Battleship/Battleship.js - Enhanced with offline mode
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { RefreshCw, X, Check, Terminal, Server, Database } from 'lucide-react';
+import { RefreshCw, X, Check, Terminal, Server, Database, Anchor, AlertTriangle } from 'lucide-react';
 
 import './style.css';
 
-function Battleship({ theme = 'black', isExpanded = false }) {
+function Battleship({ theme = 'black', isExpanded = false, skipModeSelection = false }) {
   // Game mode states
   const [gameMode, setGameMode] = useState(null); // 'online' or 'computer'
-  const [modeSelectionVisible, setModeSelectionVisible] = useState(true);
+  const [modeSelectionVisible, setModeSelectionVisible] = useState(!skipModeSelection);
   
   // Use isExpanded to adjust visual behaviors if needed
   useEffect(() => {
@@ -15,6 +15,17 @@ function Battleship({ theme = 'black', isExpanded = false }) {
       // Optional adjustments for expanded view
     }
   }, [isExpanded]);
+  
+  // Handle the skipModeSelection prop
+  useEffect(() => {
+    if (skipModeSelection && !gameMode) {
+      // Default to computer mode if we're skipping selection
+      // This can be changed to 'online' if that's the preferred default
+      setGameMode('computer');
+      setModeSelectionVisible(false);
+      startOfflineGame();
+    }
+  }, [skipModeSelection, gameMode]);
   
   const getThemeColors = () => {
     switch (theme) {
@@ -115,6 +126,7 @@ function Battleship({ theme = 'black', isExpanded = false }) {
   const [roomName, setRoomName] = useState('');
   const [waitingMessage, setWaitingMessage] = useState('Connecting to server...');
   const [disconnected, setDisconnected] = useState(false);
+  const [connectionTimeout, setConnectionTimeout] = useState(false);
   const [debug, setDebug] = useState([]);  // For debugging purposes
   const [rooms, setRooms] = useState([]);
   const [newRoomName, setNewRoomName] = useState('');
@@ -151,6 +163,7 @@ function Battleship({ theme = 'black', isExpanded = false }) {
   const socketRef = useRef(null);
   const reconnectingRef = useRef(false);
   const computerThinkingTimeoutRef = useRef(null);
+  const connectionTimeoutRef = useRef(null);
 
   // Default ship configuration
   const defaultShips = {
@@ -217,10 +230,20 @@ function Battleship({ theme = 'black', isExpanded = false }) {
     }
 
     reconnectingRef.current = true;
+    setConnectionTimeout(false);
     addDebug("Initializing WebSocket connection...");
 
+    // Clear any existing timeout
+    if (connectionTimeoutRef.current) {
+      clearTimeout(connectionTimeoutRef.current);
+    }
+
+    // Set a new timeout for connection
+    connectionTimeoutRef.current = setTimeout(() => {
+      setConnectionTimeout(true);
+    }, 10000); // 10 seconds timeout
+
     // Always use wss:// for secure connections
-    // Different URLs depending on game mode
     let wsUrl = 'wss://server-websockets.onrender.com';
     
     // For local development
@@ -232,9 +255,15 @@ function Battleship({ theme = 'black', isExpanded = false }) {
     socketRef.current = newSocket;
     
     newSocket.onopen = () => {
+      if (connectionTimeoutRef.current) {
+        clearTimeout(connectionTimeoutRef.current);
+        connectionTimeoutRef.current = null;
+      }
+      
       addDebug('WebSocket connection established');
       setConnected(true);
       setDisconnected(false);
+      setConnectionTimeout(false);
       setWaitingMessage('Loading available rooms...');
       setGameState('lobby');
       reconnectingRef.current = false;
@@ -1496,6 +1525,7 @@ function Battleship({ theme = 'black', isExpanded = false }) {
     
     socketRef.current = null;
     reconnectingRef.current = false;
+    setConnectionTimeout(false);
     createWebSocketConnection();
   };
 
@@ -1777,6 +1807,54 @@ function Battleship({ theme = 'black', isExpanded = false }) {
     );
   };
 
+  // Function to render message area - Enhanced with connection timeout
+  const renderMessages = () => {
+    if (!error && !disconnected && !connectionTimeout && connected) return null;
+    
+    return (
+      <div className="mb-4">
+        {error && (
+          <div className={`p-2 text-xs rounded-sm ${colors.error} flex justify-between items-center font-mono`}>
+            <span>ERROR: {error}</span>
+            <button onClick={() => setError('')}>
+              <X size={14} />
+            </button>
+          </div>
+        )}
+        
+        {connectionTimeout && (
+          <div className={`p-2 text-xs rounded-sm border ${colors.border} text-yellow-500 text-center font-mono`}>
+            <div className="mb-1">CONNECTION TAKING LONGER THAN EXPECTED. SERVER MAY BE STARTING UP...</div>
+            <button 
+              onClick={forceReconnect}
+              className={`px-2 py-1 text-xs border border-yellow-500 hover:bg-opacity-20 hover:bg-gray-500 text-yellow-500`}
+            >
+              RETRY CONNECTION
+            </button>
+          </div>
+        )}
+        
+        {disconnected && (
+          <div className={`p-2 text-xs rounded-sm border ${colors.border} text-yellow-500 text-center font-mono`}>
+            <div className="mb-1">CONNECTION LOST - ATTEMPTING RECONNECTION...</div>
+            <button 
+              onClick={forceReconnect}
+              className={`px-2 py-1 text-xs border border-yellow-500 hover:bg-opacity-20 hover:bg-gray-500 text-yellow-500`}
+            >
+              FORCE RECONNECT
+            </button>
+          </div>
+        )}
+        
+        {!connected && !disconnected && !connectionTimeout && gameState !== 'initial' && gameMode === 'online' && (
+          <div className={`p-2 text-xs rounded-sm border ${colors.border} ${colors.text} text-center font-mono animate-pulse`}>
+            {waitingMessage}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Render the initial "Want to play a game?" screen
   const renderInitialScreen = () => {
     return (
@@ -1803,69 +1881,8 @@ function Battleship({ theme = 'black', isExpanded = false }) {
                     bg-transparent`}
         >
           <Terminal size={18} />
-          <span>CONECT TO SERVER</span>
+          <span>CONNECT TO SERVER</span>
         </button>
-      </div>
-    );
-  };
-
-  // Render game mode selection screen
-  const renderModeSelection = () => {
-    return (
-      <div className={`${colors.bg} flex flex-col items-center justify-center py-8 px-4`}>
-        <h2 className={`text-xl md:text-2xl font-bold mb-6 ${colors.text}`}>
-          NAVAL COMBAT SYSTEM 
-        </h2>
-        
-        <div className={`w-full max-w-md p-6 rounded-lg ${colors.primaryBg} ${colors.border} border mb-8`}>
-          <div className={`mb-6 ${colors.text} text-center`}>
-            <p className="mb-2 text-sm opacity-80 uppercase tracking-wider">SELECT GAME MODE</p>
-            <div className={`h-px w-3/4 mx-auto mb-6 ${colors.border}`}></div>
-          </div>
-          
-          <div className="flex flex-col space-y-4 mb-6">
-            <button
-              onClick={() => selectGameMode('computer')}
-              className={`flex items-center justify-between px-4 py-3 rounded ${colors.secondaryBg} hover:opacity-90 transition-opacity duration-200 ${colors.border} border`}
-            >
-              <div className="flex items-center">
-                <div className={`mr-3 p-2 rounded-full ${colors.secondaryBg} ${colors.border} border`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${colors.text}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <div className="text-left">
-                  <p className={`font-bold ${colors.text}`}>Play against computer</p>
-                  <p className={`text-xs ${colors.secondaryText}`}>Challenge the AI in a local naval battle</p>
-                </div>
-              </div>
-              <span className={`${colors.accent}`}>→</span>
-            </button>
-            
-            <button
-              onClick={() => selectGameMode('online')}
-              className={`flex items-center justify-between px-4 py-3 rounded ${colors.secondaryBg} hover:opacity-90 transition-opacity duration-200 ${colors.border} border`}
-            >
-              <div className="flex items-center">
-                <div className={`mr-3 p-2 rounded-full ${colors.secondaryBg} ${colors.border} border`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${colors.text}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className="text-left">
-                  <p className={`font-bold ${colors.text}`}>Play online</p>
-                  <p className={`text-xs ${colors.secondaryText}`}>Find real opponents to challenge</p>
-                </div>
-              </div>
-              <span className={`${colors.accent}`}>→</span>
-            </button>
-          </div>
-          
-          <div className={`text-xs text-center ${colors.secondaryText} mt-6`}>
-            <p>Version 2.3.4 - Updated System</p>
-            <p className="mt-1">Secure WebSocket Connections</p>
-          </div>
-        </div>
       </div>
     );
   };
@@ -2096,42 +2113,6 @@ function Battleship({ theme = 'black', isExpanded = false }) {
     );
   };
 
-  // Render message area
-  const renderMessages = () => {
-    if (!error && !disconnected && connected) return null;
-    
-    return (
-      <div className="mb-4">
-        {error && (
-          <div className={`p-2 text-xs rounded-sm ${colors.error} flex justify-between items-center font-mono`}>
-            <span>ERROR: {error}</span>
-            <button onClick={() => setError('')}>
-              <X size={14} />
-            </button>
-          </div>
-        )}
-        
-        {disconnected && (
-          <div className={`p-2 text-xs rounded-sm border ${colors.border} text-yellow-500 text-center font-mono`}>
-            <div className="mb-1">CONNECTION LOST - ATTEMPTING RECONNECTION...</div>
-            <button 
-              onClick={forceReconnect}
-              className={`px-2 py-1 text-xs border border-yellow-500 hover:bg-opacity-20 hover:bg-gray-500 text-yellow-500`}
-            >
-              FORCE RECONNECT
-            </button>
-          </div>
-        )}
-        
-        {!connected && !disconnected && gameState !== 'initial' && gameMode === 'online' && (
-          <div className={`p-2 text-xs rounded-sm border ${colors.border} ${colors.text} text-center font-mono animate-pulse`}>
-            {waitingMessage}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   // Function to render game log/message panel
   const renderGameLog = () => {
     // Get last 8 messages to display
@@ -2225,49 +2206,87 @@ function Battleship({ theme = 'black', isExpanded = false }) {
         {renderMessages()}
         
         {/* Game Mode Selection */}
-        {modeSelectionVisible && renderModeSelection()}
-        
-        {/* Game states - only visible when a mode is selected */}
-        {!modeSelectionVisible && (
-          <div className="flex flex-col h-full">
-            {/* Top Bar with navigation and mode indicator */}
-            <div className="flex justify-between items-center mb-1 h-8">
-              <button 
-                onClick={backToModeSelection}
-                className={`px-2 py-0.5 text-xs rounded ${colors.secondaryBg} ${colors.text} border ${colors.border} hover:opacity-80 transition-opacity duration-200 flex items-center`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back
-              </button>
-              
-              <div className={`px-2 py-0.5 text-xs rounded ${colors.primaryBg} ${colors.text} border ${colors.border} flex items-center`}>
-                <span className={`inline-block w-2 h-2 rounded-full mr-1 ${gameMode === 'online' ? 'bg-green-500' : 'bg-blue-500'}`}></span>
-                {gameMode === 'online' ? 'Online Mode' : 'Computer Mode'}
+        {modeSelectionVisible && (
+          <div className={`${colors.bg} p-4 rounded-sm border ${colors.border} ${colors.text} h-full flex flex-col items-center justify-center text-center w-full ${colors.scanlines}`}>
+            <div className={`text-xl md:text-2xl font-bold mb-6 font-mono ${colors.accent}`}>
+              NAVAL COMBAT SYSTEM
+            </div>
+
+            <div className={`mb-6 flex items-center justify-center`}>
+              <div className="relative">
+                <Anchor size={48} className={colors.accent} />
+                {theme === 'cyberpunk' && (
+                  <div 
+                    className="absolute inset-0 rounded-full animate-ping"
+                    style={{
+                      background: 'radial-gradient(circle, rgba(6, 182, 212, 0.3) 0%, rgba(6, 182, 212, 0) 70%)'
+                    }}
+                  ></div>
+                )}
               </div>
             </div>
             
-            {/* Main Game Content */}
-            <div className="flex-1 overflow-auto">
-              {gameState === 'initial' && renderInitialScreen()}
-              {gameState === 'lobby' && renderLobby()}
-              {gameState === 'waiting' && renderWaiting()}
-              {gameState === 'setup' && renderSetup()}
-              {gameState === 'playing' && renderPlaying()}
-              {gameState === 'gameover' && renderGameOver()}
+            <div className={`max-w-md mx-auto mb-8 ${colors.secondaryText}`}>
+              <p className="mb-4">Select your preferred game mode:</p>
+              
+              <div className="grid grid-cols-1 gap-4">
+                <button 
+                  onClick={() => selectGameMode('computer')}
+                  className={`p-4 border ${colors.border} rounded-sm flex justify-between items-center transition-all duration-300 hover:scale-105`}
+                >
+                  <div className="flex items-center">
+                    <div className={`mr-4 p-2 rounded-full ${theme === 'cyberpunk' ? 'bg-pink-900' : colors.secondaryBg}`}>
+                      <Terminal size={24} className={colors.text} />
+                    </div>
+                    <div className="text-left">
+                      <h3 className={`font-bold ${colors.text}`}>Offline Mode</h3>
+                      <p className={`text-sm ${colors.secondaryText}`}>Play against AI opponent</p>
+                    </div>
+                  </div>
+                  <div className={`${colors.accent}`}>&gt;</div>
+                </button>
+                
+                <button 
+                  onClick={() => selectGameMode('online')}
+                  className={`p-4 border ${colors.border} rounded-sm flex justify-between items-center transition-all duration-300 hover:scale-105`}
+                >
+                  <div className="flex items-center">
+                    <div className={`mr-4 p-2 rounded-full ${theme === 'cyberpunk' ? 'bg-pink-900' : colors.secondaryBg}`}>
+                      <Server size={24} className={colors.text} />
+                    </div>
+                    <div className="text-left">
+                      <h3 className={`font-bold ${colors.text}`}>Online Mode</h3>
+                      <p className={`text-sm ${colors.secondaryText}`}>Play against real opponents</p>
+                    </div>
+                  </div>
+                  <div className={`${colors.accent}`}>&gt;</div>
+                </button>
+              </div>
+              
+              <p className={`text-xs mt-4 ${colors.secondaryText}`}>
+                * Online multiplayer requires active server connection
+              </p>
             </div>
+          </div>
+        )}
+        
+        {/* Game states - only visible when a mode is selected */}
+        {!modeSelectionVisible && (
+          <>
+            {gameState === 'initial' && renderInitialScreen()}
+            {gameState === 'lobby' && renderLobby()}
+            {gameState === 'waiting' && renderWaiting()}
+            {gameState === 'setup' && renderSetup()}
+            {gameState === 'playing' && renderPlaying()}
+            {gameState === 'gameover' && renderGameOver()}
             
             {/* Game Logs and Shot History (only in playing/gameover states) */}
             {(gameState === 'playing' || gameState === 'gameover') && (
               <div className="mt-2">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  
-                  <div>{renderShotHistory()}</div>
-                </div>
+                {renderShotHistory()}
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>
