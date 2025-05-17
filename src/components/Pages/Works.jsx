@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Github, ShoppingCart, X, Filter, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import Cards from '../Cards/Cards';
 
 const Work = ({ theme, colors, projects }) => {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState([]);
   const [filterVisible, setFilterVisible] = useState(true);
+
+
+  const handleAddToCollection = (project) => {
+    console.log('Adding to collection:', project.title);
+    // Add your collection logic here
+  };
   
   // Estado para controlar as animações
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -325,90 +332,12 @@ const Work = ({ theme, colors, projects }) => {
         {/* Projects Grid com animação simplificada */}
         <div key={activeFilters.join('-')} className="projects-grid">
           {filteredProjects.map((project, index) => (
-            <div 
-              key={project.id} 
-              className={`project-card ${colors.cardBg} text-${theme === 'white' ? 'black' : 'white'} shadow-md ${theme === 'cyberpunk' ? 'cyberpunk-border' : 'border border-gray-200'}`}
-              style={{
-                animationDelay: `${index * 80}ms`,
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
-                borderLeft: theme === 'cyberpunk' ? 
-                  (index % 2 === 0 ? '4px solid #3b82f6' : '4px solid #ec4899') :
-                  theme === 'black' ? 
-                  '1px solid rgba(255, 255, 255, 0.1)' : 
-                  '1px solid rgba(0, 0, 0, 0.1)'
-              }}
-            >
-              {/* Project Image */}
-              <div className={`h-40 relative overflow-hidden ${theme === 'cyberpunk' ? 'bg-gray-800' : theme === 'black' ? 'bg-gray-700' : 'bg-gray-200'}`}>
-                <img 
-                  src={project.image} 
-                  alt={project.title} 
-                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" 
-                />
-                
-                {/* Tags */}
-                <div className={`absolute bottom-0 left-0 right-0 ${
-                  theme === 'cyberpunk' ? 'bg-purple-900' : 
-                  theme === 'black' ? 'bg-gray-800' : 
-                  'bg-white'
-                } p-2 flex flex-wrap gap-1`}>
-                  {project.tags.map(tag => (
-                    <span 
-                      key={tag} 
-                      className={`text-xs py-1 px-2 ${
-                        theme === 'cyberpunk' 
-                          ? 'text-cyan-300 border-cyan-400' 
-                          : theme === 'black'
-                            ? 'text-white bg-gray-800 border-gray-700'
-                            : 'text-black border-gray-300'
-                      } border shadow-sm transition-all duration-200 hover:scale-105 ${
-                        activeFilters.includes(tag) ? (
-                          theme === 'cyberpunk' ? 'ring-1 ring-cyan-400' : 'ring-1 ring-blue-400'
-                        ) : ''
-                      }`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Content */}
-              <div className="p-4 flex flex-col flex-grow">
-                <h3 className={`text-lg font-bold mb-2 ${theme === 'cyberpunk' ? 'text-cyan-300' : theme === 'black' ? 'text-white' : 'text-black'}`}>{project.title}</h3>
-                <p className={`text-sm ${theme === 'cyberpunk' ? 'text-pink-200' : theme === 'black' ? 'text-gray-300' : 'text-gray-600'} mb-4 flex-grow`}>{project.description}</p>
-                
-                <div className="flex items-center justify-between mt-auto">
-                  <a 
-                    href={project.githubUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className={`${theme === 'cyberpunk' ? 'text-pink-300' : theme === 'black' ? 'text-gray-300' : 'text-gray-700'} transition-transform duration-200 hover:scale-125`}
-                  >
-                    <Github size={20} />
-                  </a>
-                  
-                  <button
-                    onClick={() => addToCart(project)}
-                    className={`px-3 py-1 transition-all duration-200 hover:translate-y-0.5 ${
-                      cart.some(item => item.id === project.id)
-                        ? theme === 'cyberpunk' 
-                          ? 'bg-cyan-600 text-black' 
-                          : 'bg-green-800 text-white'
-                        : theme === 'cyberpunk'
-                          ? 'bg-pink-600 text-cyan-300'
-                          : theme === 'black'
-                            ? 'bg-white text-black'
-                            : 'bg-black text-white'
-                    }`}
-                  >
-                    {cart.some(item => item.id === project.id) 
-                      ? <Check size={18} /> 
-                      : 'Add to Collection'}
-                  </button>
-                </div>
-              </div>
-            </div>
+            <Cards 
+              key={project.id}
+              project={project}
+              theme={theme}
+              onAddToCollection={handleAddToCollection}
+            />
           ))}
         </div>
         

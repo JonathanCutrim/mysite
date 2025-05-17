@@ -1,0 +1,16 @@
+.title {
+  text-align: left;
+  font-size: 20px;
+  padding-right: 150px;
+}
+
+.card-box {
+  align-items: end !important;
+  padding-bottom: 15px;
+}
+
+.tech-box {
+  position: absolute;
+  bottom: -52px;
+  right: -17%;
+}
