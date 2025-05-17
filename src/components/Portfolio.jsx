@@ -287,26 +287,28 @@ const Portfolio = () => {
 
                 {/* Right side - Game section */}
                 <div className={`w-1/2 flex flex-col h-full ${colors.secondaryBg}`} style={{ position: 'relative' }}>
-                  {showBattleship ? (
-                    /* Full game component with GameModeSelector */
-                    <div className="relative w-full h-full">
-                      <EnhancedBattleshipGame 
-                        theme={theme} 
-                        onBack={backToGamePreview} 
-                      />
-                    </div>
-                  ) : (
-                    /* Enhanced Naval Combat preview component */
-                    <div 
-                      className="w-full h-full p-6 flex items-center justify-center cursor-pointer"
-                      onClick={openBattleshipGame}
-                    >
-                      <div className="w-full max-w-md transition-transform duration-300 hover:scale-105">
-                        <NavalCombat theme={theme} />
-                      </div>
-                    </div>
-                  )}
-                </div>
+  {showBattleship ? (
+    /* Full game component with improved GameModeSelector */
+    <div className="relative w-full h-full">
+      <EnhancedBattleshipGame 
+        theme={theme} 
+        onBack={backToGamePreview} 
+      />
+    </div>
+  ) : (
+    /* Enhanced Naval Combat preview component */
+    <div 
+      className="w-full h-full p-6 flex items-center justify-center cursor-pointer"
+    >
+      <div className="w-full max-w-md transition-transform duration-300 hover:scale-105">
+        <NavalCombat 
+          theme={theme} 
+          onClick={openBattleshipGame}
+        />
+      </div>
+    </div>
+  )}
+</div>
               </div>
             )}
 
