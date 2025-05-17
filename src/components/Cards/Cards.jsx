@@ -18,7 +18,8 @@ const Cards = ({ project, theme, onAddToCollection }) => {
           tagBorder: "border-pink-500",
           tagText: "text-cyan-300",
           actionButton: "bg-pink-600 text-cyan-300 hover:bg-pink-700",
-          githubIcon: "text-pink-300 hover:text-cyan-300"
+          githubIcon: "text-pink-300 hover:text-cyan-300",
+          shinyTextContainer: "bg-pink-900/80"
         };
       case 'black':
         return {
@@ -28,7 +29,8 @@ const Cards = ({ project, theme, onAddToCollection }) => {
           tagBorder: "border-gray-600",
           tagText: "text-gray-300",
           actionButton: "bg-white text-black hover:bg-gray-200",
-          githubIcon: "text-gray-300 hover:text-white"
+          githubIcon: "text-gray-300 hover:text-white",
+          shinyTextContainer: "bg-gray-700/80"
         };
       case 'white':
       default:
@@ -39,7 +41,8 @@ const Cards = ({ project, theme, onAddToCollection }) => {
           tagBorder: "border-gray-300",
           tagText: "text-gray-800",
           actionButton: "bg-black text-white hover:bg-gray-800",
-          githubIcon: "text-gray-700 hover:text-black"
+          githubIcon: "text-gray-700 hover:text-black",
+          shinyTextContainer: "bg-gray-200/90"
         };
     }
   };
@@ -74,15 +77,6 @@ const Cards = ({ project, theme, onAddToCollection }) => {
       
       {/* Technology Tags - Top right position */}
       <div className="absolute w-1/2 bottom-4 right-4 flex flex-wrap gap-2 justify-end tech-box">
-
-        {/* {project.tags.map(tag => (
-          <span 
-            key={tag} 
-            className={`text-xs py-1 px-2 opacity-30 ${styles.tagText} font-extrabold uppercase`}
-          >
-            {tag}
-          </span>
-        ))} */}
         <CircularText
           text="VTEX*REACT*NODE*"
           onHover="speedUp"
@@ -91,15 +85,15 @@ const Cards = ({ project, theme, onAddToCollection }) => {
         />
       </div>
       
-      {/* Action Buttons - Appear on hover at bottom */}
+      {/* Action Buttons - Appear on hover from TOP instead of bottom */}
       <div 
-        className={`absolute bottom-0 left-0 right-0 p-4 flex justify-between items-center transition-transform duration-300 ${isHovered ? 'translate-y-0' : 'translate-y-full'}`}
+        className={`absolute top-0 left-0 right-0 p-4 flex justify-between items-center transition-transform duration-300 ${isHovered ? 'translate-y-0' : '-translate-y-full'}`}
         style={{ 
           background: theme === 'cyberpunk' 
-            ? 'linear-gradient(to top, rgba(88, 28, 135, 0.9), rgba(88, 28, 135, 0))' 
+            ? 'linear-gradient(to bottom, rgba(88, 28, 135, 0.9), rgba(88, 28, 135, 0))' 
             : theme === 'black' 
-              ? 'linear-gradient(to top, rgba(17, 24, 39, 0.9), rgba(17, 24, 39, 0))' 
-              : 'linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0))' 
+              ? 'linear-gradient(to bottom, rgba(17, 24, 39, 0.9), rgba(17, 24, 39, 0))' 
+              : 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0))' 
         }}
       >
         <a 
@@ -113,9 +107,12 @@ const Cards = ({ project, theme, onAddToCollection }) => {
         
         <button
           onClick={() => onAddToCollection(project)}
-          className={`px-3 py-1 rounded transition-all duration-200 ${styles.actionButton} hover:scale-105`}
+          className={`px-3 py-1 rounded font-bold border transition-all duration-200 border hover:scale-105`}
         >
-          <ShinyText text="Just some shiny text!" disabled={false} speed={3} className='custom-class' />
+          {/* ShinyText with background container for better contrast */}
+          <div className={`px-2 py-1 rounded uppercase`}>
+          View
+          </div>
         </button>
       </div>
     </div>

@@ -1,0 +1,205 @@
+/* Naval theme animations and effects */
+
+/* Waves animation */
+@keyframes waveAnimation {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Submarine movement */
+@keyframes submarineMove {
+  0% { transform: translateX(-150px); }
+  100% { transform: translateX(calc(100vw + 150px)); }
+}
+
+/* Bubbles rising animation */
+@keyframes bubbleRise {
+  0% { transform: translateY(0); opacity: 0.7; }
+  100% { transform: translateY(-30px); opacity: 0; }
+}
+
+/* Ship rocking animation */
+@keyframes shipRock {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+/* Radar sweep animation */
+@keyframes radarSweep {
+  from { transform: rotate(0deg) translateX(0); }
+  to { transform: rotate(360deg) translateX(0); }
+}
+
+/* Sonar ping effect */
+@keyframes sonarPing {
+  0% { transform: scale(0); opacity: 1; }
+  70% { transform: scale(3); opacity: 0.7; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+/* Water shimmer effect */
+@keyframes waterShimmer {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0.3; }
+}
+
+/* Depth charges animation */
+@keyframes depthCharge {
+  0% { transform: translateY(0); }
+  70% { transform: translateY(20px); }
+  100% { transform: translateY(40px); opacity: 0; }
+}
+
+/* Explosion animation */
+@keyframes explosion {
+  0% { transform: scale(0); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+/* Water drip animation */
+@keyframes waterDrip {
+  0% { transform: translateY(0); opacity: 0.8; }
+  100% { transform: translateY(20px); opacity: 0; }
+}
+
+/* Flag waving animation */
+@keyframes flagWave {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+/* Torpedo launch animation */
+@keyframes torpedoLaunch {
+  0% { transform: translateX(0); opacity: 0.8; }
+  100% { transform: translateX(100px); opacity: 0; }
+}
+
+/* Water splashing animation */
+.water-splash {
+  position: absolute;
+  pointer-events: none;
+  animation: waterSplash 1s forwards;
+}
+
+@keyframes waterSplash {
+  0% { transform: scale(0) translateY(0); opacity: 0.8; }
+  50% { transform: scale(1) translateY(-20px); opacity: 0.6; }
+  100% { transform: scale(1.5) translateY(-10px); opacity: 0; }
+}
+
+/* Anchor drop animation */
+@keyframes anchorDrop {
+  0% { transform: translateY(-20px); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(30px); opacity: 0; }
+}
+
+/* Periscope rise animation */
+@keyframes periscopeRise {
+  0% { transform: translateY(20px); }
+  100% { transform: translateY(0); }
+}
+
+/* Compass rotation */
+@keyframes compassRotate {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(90deg); }
+  50% { transform: rotate(180deg); }
+  75% { transform: rotate(270deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Buoy floating animation */
+@keyframes buoyFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Naval flare launch */
+@keyframes flareLaunch {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-100px); opacity: 0; }
+}
+
+/* Water ripple effect */
+.water-ripple {
+  border-radius: 50%;
+  position: absolute;
+  transform: scale(0);
+  animation: rippleEffect 2s linear forwards;
+}
+
+@keyframes rippleEffect {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Ship horn light flash */
+@keyframes hornFlash {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+/* Wake behind ship animation */
+.ship-wake {
+  opacity: 0.6;
+  animation: wakeAnimation 2s infinite;
+}
+
+@keyframes wakeAnimation {
+  0% { width: 0; opacity: 0.8; }
+  50% { opacity: 0.6; }
+  100% { width: 100px; opacity: 0; }
+}
+
+/* Water spray animation */
+@keyframes waterSpray {
+  0% { height: 0; opacity: 0.8; }
+  50% { height: 20px; opacity: 0.6; }
+  100% { height: 10px; opacity: 0; }
+}
+
+/* Sea mine bobbing */
+@keyframes mineBobbing {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(3deg); }
+  75% { transform: translateY(5px) rotate(-3deg); }
+}
+
+/* Nautical light blinking */
+@keyframes lightBlink {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Theme-specific styles */
+.cyberpunk-naval {
+  --water-color: rgba(6, 182, 212, 0.4);
+  --water-deep: #0f172a;
+  --ship-color: #ec4899;
+  --radar-color: #06b6d4;
+  --accent-color: #0ff;
+  --glow-effect: '0 0 15px rgba(6, 182, 212, 0.5)';
+}
+
+.black-naval {
+  --water-color: rgba(59, 130, 246, 0.3);
+  --water-deep: #0f172a;
+  --ship-color: #60a5fa;
+  --radar-color: #60a5fa;
+  --accent-color: #60a5fa;
+  --glow-effect: '0 0 10px rgba(59, 130, 246, 0.3)';
+}
+
+.white-naval {
+  --water-color: rgba(59, 130, 246, 0.2);
+  --water-deep: #f0f9ff;
+  --ship-color: #3b82f6;
+  --radar-color: #3b82f6;
+  --accent-color: #3b82f6;
+  --glow-effect: '0 0 10px rgba(59, 130, 246, 0.2)';
+}

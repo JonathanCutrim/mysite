@@ -22,12 +22,14 @@ import LogoAnimation from "./LogoAnimation";
 import NameAnimation from "./NameAnimation";
 import Skills from "./Pages/Skills";
 import Work from "./Pages/Works";
-import Battleship from './Battleship/Battleship'
+import EnhancedBattleshipGame from "./EnhancedBattleshipGame/EnhancedBattleshipGame";
+import NavalCombat from './NavalCombat/NavalCombat';
 import { projects } from "./Content/projects";
 import themeColors from "./Content/themeColors";
 import TrueFocus from './TrueFocus/TrueFocus';
 
 import './home.css';
+import './naval-animations.css';
 
 const Portfolio = () => {
   const [theme, setTheme] = useState("black"); 
@@ -35,6 +37,7 @@ const Portfolio = () => {
   const [transitionActive, setTransitionActive] = useState(false);
   const [nextPage, setNextPage] = useState("home");
   const [gameExpanded, setGameExpanded] = useState(false);
+  const [showBattleship, setShowBattleship] = useState(false);
   
   // States for terminals
   const [isGameTerminalOpen, setIsGameTerminalOpen] = useState(false);
@@ -73,14 +76,16 @@ const Portfolio = () => {
     }
   };
 
-  // Open the game terminal
-  const openGameTerminal = () => {
-    setIsGameTerminalOpen(true);
+  // Open the full Battleship game
+  const openBattleshipGame = () => {
+    setShowBattleship(true);
+    setGameExpanded(true);
   };
 
-  // Close the game terminal
-  const closeGameTerminal = () => {
-    setIsGameTerminalOpen(false);
+  // Go back to the compact game preview
+  const backToGamePreview = () => {
+    setShowBattleship(false);
+    setGameExpanded(false);
   };
 
   return (
@@ -201,205 +206,109 @@ const Portfolio = () => {
 
             {/* Content Pages */}
             {activePage === "home" && (
-  <div className={`flex h-full ${colors.bg} ${colors.text}`} style={{ height: "calc(100% - 64px)" }}>
-    {/* Lado esquerdo - Apresentação do desenvolvedor com textos CENTRALIZADOS */}
-    <div className="w-1/2 flex flex-col justify-center items-center px-8 py-8 relative">
-      <div className="relative z-10  text-center">
-        {/* Badge para theme cyberpunk */}
-        {theme === "cyberpunk" && (
-          <div className="inline-block px-3 py-1 mb-6 border border-pink-500 text-cyan-300 text-sm font-medium tracking-wider">
-            {"<"}DEV{">"}
-          </div>
-        )}
+              <div className={`flex h-full ${colors.bg} ${colors.text}`} style={{ height: "calc(100% - 64px)" }}>
+                {/* Left side - Developer introduction with centered text */}
+                <div className="w-1/2 flex flex-col justify-center items-center px-8 py-8 relative">
+                  <div className="relative z-10 text-center">
+                    {/* Badge for cyberpunk theme */}
+                    {theme === "cyberpunk" && (
+                      <div className="inline-block px-3 py-1 mb-6 border border-pink-500 text-cyan-300 text-sm font-medium tracking-wider">
+                        {"<"}DEV{">"}
+                      </div>
+                    )}
 
-        {/* Título principal com nome */}
-        <div className="mb-8">
-          <h1 className={`text-5xl md:text-6xl font-bold mb-1 ${
-            theme === "cyberpunk" ? "text-cyan-300 cyberpunk-glow" : ""
-          }`}>
-            Hello, I'm
-          </h1>
-          
-          <h2 className={`text-6xl md:text-7xl font-extrabold ${
-            theme === "cyberpunk" ? "text-pink-300" : ""
-          }`}>
-            Jonathan Lacerda
-          </h2>
-          
-          <div className={`w-32 h-1 mt-6 mb-8 mx-auto ${
-            theme === "cyberpunk" ? "bg-pink-500" : "bg-gray-400"
-          }`}></div>
-        </div>
+                    {/* Main title with name */}
+                    <div className="mb-8">
+                      <h1 className={`text-5xl md:text-6xl font-bold mb-1 ${
+                        theme === "cyberpunk" ? "text-cyan-300 cyberpunk-glow" : ""
+                      }`}>
+                        Hello, I'm
+                      </h1>
+                      
+                      <h2 className={`text-6xl md:text-7xl font-extrabold ${
+                        theme === "cyberpunk" ? "text-pink-300" : ""
+                      }`}>
+                        Jonathan Lacerda
+                      </h2>
+                      
+                      <div className={`w-32 h-1 mt-6 mb-8 mx-auto ${
+                        theme === "cyberpunk" ? "bg-pink-500" : "bg-gray-400"
+                      }`}></div>
+                    </div>
 
-        {/* Especialidades - centralizadas */}
-        <div className="flex flex-wrap gap-3 mb-6 justify-center">
-          
-          <TrueFocus 
-            sentence="Front-End VTEX E-commerce Games"
-            manualMode={false}
-            blurAmount={3}
-            borderColor="#6b21a6"
-            animationDuration={2}
-            pauseBetweenAnimations={1}
-          />
-        </div>
+                    {/* Specialties - centered */}
+                    <div className="flex flex-wrap gap-3 mb-6 justify-center">
+                      <TrueFocus 
+                        sentence="Front-End VTEX E-commerce Games"
+                        manualMode={false}
+                        blurAmount={3}
+                        borderColor="#6b21a6"
+                        animationDuration={2}
+                        pauseBetweenAnimations={1}
+                      />
+                    </div>
 
-        {/* Bio - centralizada */}
-        <div className={`space-y-4 mb-8 mx-auto ${
-          theme === "cyberpunk" ? "text-gray-300" : theme === "black" ? "text-gray-300" : "text-gray-600"
-        }`}>
-          <p className="text-lg leading-relaxed">
-            Desenvolvedor front-end com mais de uma década de experiência em arquitetura de interfaces e sistemas de e-commerce.
-          </p>
-          <p className="text-lg leading-relaxed">
-            Especializado na criação de experiências digitais refinadas e performáticas com foco em conversão.
-          </p>
-          <p className="text-lg leading-relaxed">
-            Recentemente, expandindo horizontes no desenvolvimento de jogos e aplicações interativas.
-          </p>
-        </div>
-      </div>
-      
-      {/* Elementos decorativos de fundo - visíveis apenas em temas não-white */}
-      {theme !== "white" && (
-        <>
-          <div className="absolute top-1/4 left-1/4 w-16 h-16 rounded-full opacity-10 blur-2xl"
-            style={{ 
-              background: theme === "cyberpunk" ? 
-                "radial-gradient(circle, rgba(236,72,153,1) 0%, rgba(139,92,246,0) 70%)" : 
-                "radial-gradient(circle, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0) 70%)" 
-            }}
-          ></div>
-          <div className="absolute bottom-1/3 right-1/4 w-24 h-24 rounded-full opacity-10 blur-xl"
-            style={{ 
-              background: theme === "cyberpunk" ? 
-                "radial-gradient(circle, rgba(6,182,212,1) 0%, rgba(139,92,246,0) 70%)" : 
-                "radial-gradient(circle, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0) 70%)" 
-            }}
-          ></div>
-        </>
-      )}
-    </div>
+                    {/* Bio - centered */}
+                    <div className={`space-y-4 mb-8 mx-auto ${
+                      theme === "cyberpunk" ? "text-gray-300" : theme === "black" ? "text-gray-300" : "text-gray-600"
+                    }`}>
+                      <p className="text-lg leading-relaxed">
+                        Desenvolvedor front-end com mais de uma década de experiência em arquitetura de interfaces e sistemas de e-commerce.
+                      </p>
+                      <p className="text-lg leading-relaxed">
+                        Especializado na criação de experiências digitais refinadas e performáticas com foco em conversão.
+                      </p>
+                      <p className="text-lg leading-relaxed">
+                        Recentemente, expandindo horizontes no desenvolvimento de jogos e aplicações interativas.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Decorative background elements - visible only in non-white themes */}
+                  {theme !== "white" && (
+                    <>
+                      <div className="absolute top-1/4 left-1/4 w-16 h-16 rounded-full opacity-10 blur-2xl"
+                        style={{ 
+                          background: theme === "cyberpunk" ? 
+                            "radial-gradient(circle, rgba(236,72,153,1) 0%, rgba(139,92,246,0) 70%)" : 
+                            "radial-gradient(circle, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0) 70%)" 
+                        }}
+                      ></div>
+                      <div className="absolute bottom-1/3 right-1/4 w-24 h-24 rounded-full opacity-10 blur-xl"
+                        style={{ 
+                          background: theme === "cyberpunk" ? 
+                            "radial-gradient(circle, rgba(6,182,212,1) 0%, rgba(139,92,246,0) 70%)" : 
+                            "radial-gradient(circle, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0) 70%)" 
+                        }}
+                      ></div>
+                    </>
+                  )}
+                </div>
 
-    {/* Lado direito - Jogo Battleship em formato compacto inicialmente */}
-    <div className={`w-1/2 flex flex-col h-full ${colors.secondaryBg}`} style={{ position: 'relative' }}>
-      {/* Versão compacta do jogo (visível quando não expandido) */}
-      {!gameExpanded && (
-        <div 
-          className={`flex flex-col items-center justify-center h-full cursor-pointer transition-all duration-300 hover:bg-opacity-80`}
-          onClick={() => setGameExpanded(true)}
-        >
-          <div className={`w-64 h-64 relative overflow-hidden rounded-lg ${
-            theme === "cyberpunk" 
-              ? "border-2 border-cyan-500" 
-              : theme === "white" 
-                ? "border-2 border-gray-300" 
-                : "border border-gray-700"
-          }`}
-          style={{
-            boxShadow: theme === "cyberpunk" 
-              ? "0 0 15px rgba(6, 182, 212, 0.5)" 
-              : theme === "white" 
-                ? "0 4px 6px -1px rgba(0, 0, 0, 0.1)" 
-                : "0 4px 6px -1px rgba(0, 0, 0, 0.5)"
-          }}>
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-              <h3 className={`text-xl font-bold mb-2 ${
-                theme === "cyberpunk" ? "text-cyan-300 cyberpunk-glow" : ""
-              }`}>
-                Naval Combat
-              </h3>
-              
-              <div className={`my-2 ${
-                theme === "cyberpunk" ? "text-cyan-300" : theme === "black" ? "text-gray-300" : "text-gray-700"
-              } font-mono text-xs`}>
-                STATUS: AWAITING AUTHORIZATION
+                {/* Right side - Game section */}
+                <div className={`w-1/2 flex flex-col h-full ${colors.secondaryBg}`} style={{ position: 'relative' }}>
+                  {showBattleship ? (
+                    /* Full game component with GameModeSelector */
+                    <div className="relative w-full h-full">
+                      <EnhancedBattleshipGame 
+                        theme={theme} 
+                        onBack={backToGamePreview} 
+                      />
+                    </div>
+                  ) : (
+                    /* Enhanced Naval Combat preview component */
+                    <div 
+                      className="w-full h-full p-6 flex items-center justify-center cursor-pointer"
+                      onClick={openBattleshipGame}
+                    >
+                      <div className="w-full max-w-md transition-transform duration-300 hover:scale-105">
+                        <NavalCombat theme={theme} />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-              
-              <div className={`mt-4 mb-2 w-36 py-2 text-center text-sm font-mono ${
-                theme === "cyberpunk" 
-                  ? "border border-cyan-500 text-cyan-300"
-                  : theme === "black"
-                    ? "border border-gray-500 text-gray-300"
-                    : "border border-gray-400 text-gray-600"
-              }`}>
-                Wanna play?
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Versão expandida do jogo (visível quando expandido) */}
-      {gameExpanded && (
-        <div className="relative h-full w-full">
-          {/* Botão para minimizar */}
-          <button 
-            className={`absolute top-4 right-4 z-30 p-1 rounded-full ${
-              theme === "cyberpunk" 
-                ? "bg-pink-900 text-cyan-300 hover:bg-pink-800" 
-                : theme === "black"
-                  ? "bg-gray-700 text-gray-300 hover:bg-gray-600" 
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-            onClick={() => setGameExpanded(false)}
-            title="Minimize game"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </button>
-          
-          {/* Gaming header */}
-          <div className="text-center pt-6 pb-2">
-            <h3 className={`text-xl md:text-2xl font-extrabold  mb-1 ${
-              theme === "cyberpunk" ? "text-cyan-300 cyberpunk-glow" : ""
-            }`}>
-              Play Battleship
-            </h3>
-          </div>
-
-          {/* Game Container - Full Height */}
-          <div className="flex-1 px-6 pb-6 flex flex-col h-5/6" style={{ zIndex: 26 }}>
-            {/* Jogo com bordas e estilo adequados para o tema */}
-            <div 
-              className={`w-full h-full overflow-hidden relative ${
-                theme === "cyberpunk" 
-                  ? "border-2 border-cyan-500 rounded-md" 
-                  : theme === "white" 
-                    ? "border-2 border-gray-300 rounded-md" 
-                    : "border border-gray-700 rounded-md"
-              }`}
-              style={{
-                boxShadow: theme === "cyberpunk" 
-                  ? "0 0 15px rgba(6, 182, 212, 0.5)" 
-                  : theme === "white" 
-                    ? "0 4px 6px -1px rgba(0, 0, 0, 0.1)" 
-                    : "0 4px 6px -1px rgba(0, 0, 0, 0.5)"
-              }}
-            >
-              {/* Efeitos sutis de CRT apenas para temas não-white */}
-              {theme !== "white" && (
-                <div 
-                  className="absolute inset-0 pointer-events-none z-10" 
-                  style={{
-                    backgroundImage: theme === "cyberpunk"
-                      ? 'repeating-linear-gradient(0deg, rgba(0, 255, 255, 0.03), rgba(0, 255, 255, 0.03) 1px, transparent 1px, transparent 2px)'
-                      : 'repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 2px)',
-                    backgroundSize: '100% 2px',
-                    opacity: theme === "cyberpunk" ? 0.4 : 0.2
-                  }}
-                ></div>
-              )}
-              
-              <Battleship theme={theme} />
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-)}
+            )}
 
             {/* Skills Page */}
             <Skills

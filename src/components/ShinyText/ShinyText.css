@@ -1,5 +1,6 @@
+/* Enhanced ShinyText.css with theme-specific gradients */
 .shiny-text {
-  color: #b5b5b5a4; /* Adjust this color to change intensity/style */
+  color: #b5b5b5a4; /* Default color */
   background: linear-gradient(
     120deg,
     rgba(255, 255, 255, 0) 40%,
@@ -13,15 +14,65 @@
   animation: shine 5s linear infinite;
 }
 
+/* White theme version (dark shine on light background) */
+.shiny-text-white {
+  color: rgba(0, 0, 0, 0.7) !important;
+  background: linear-gradient(
+    120deg,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0) 60%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Black theme version (brighter shine) */
+.shiny-text-black {
+  color: rgba(255, 255, 255, 0.8) !important;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Cyberpunk theme version (neon effect) */
+.shiny-text-cyberpunk {
+  color: rgba(34, 211, 238, 0.8) !important; /* Cyan base color */
+  background: linear-gradient(
+    120deg,
+    rgba(34, 211, 238, 0) 40%,
+    rgba(236, 72, 153, 0.9) 50%, /* Pink highlight */
+    rgba(34, 211, 238, 0) 60%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 0 5px rgba(34, 211, 238, 0.3);
+}
+
 @keyframes shine {
   0% {
-    background-position: 100%;
+    background-position: 200% center;
   }
   100% {
-    background-position: -100%;
+    background-position: -200% center;
   }
 }
 
 .shiny-text.disabled {
   animation: none;
+}
+
+/* Container for better visibility against varying backgrounds */
+.shiny-text-container {
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
 }
